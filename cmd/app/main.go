@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-const AppVersion ="v0.0.2"
+const AppVersion ="v0.0.3"
 
 type Config struct {
 	Git         *git.Config     `json:"git" validate:"required"`

@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-const AppVersion ="v0.0.3"
+const AppVersion ="v0.0.4"
 
 type Config struct {
 	Git         *git.Config     `json:"git" validate:"required"`
@@ -21,6 +21,14 @@ type Config struct {
 }
 
 func main() {
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	configFilePath := homeDir + "/" + cloner.ConfigFileName
+	var configFile string
+	flag.StringVar(&configFile, "configfile", configFilePath, "Init config")
 	version := flag.Bool("version", false, "display version")
 	flag.Parse()
 
@@ -50,16 +58,7 @@ func main() {
 		},
 	)
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
 	cfg := &Config{Layouts: layouts, ProjectsDir: homeDir + "/" + "mygo", Namespaces: []string{"common-bank-services"}}
-	configFilePath := homeDir + "/" + cloner.ConfigFileName
-	var configFile string
-	flag.StringVar(&configFile, "configfile", configFilePath, "Init config")
-	flag.Parse()
 
 	err = cfg.ReadFromFile(configFile)
 	if err != nil {

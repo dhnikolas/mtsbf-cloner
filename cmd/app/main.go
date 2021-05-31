@@ -63,7 +63,9 @@ func main() {
 
 	err = cfg.ReadFromFile(configFile)
 	if err != nil {
-		panic("Cannot read config file " + configFile + " " + err.Error())
+		panic(`Cannot read config file ` + configFile + " " + err.Error() + "\n\n" +
+			`Try to create a config file and set git credentials: ` + "\n" +
+			`echo '{"git": {"user":"", "password":""}}' > ~/.clonerconfig`)
 	}
 
 	validate := validator.New()

@@ -11,6 +11,8 @@ import (
 	"os"
 )
 
+const AppVersion ="v0.0.1"
+
 type Config struct {
 	Git         *git.Config     `json:"git" validate:"required"`
 	Layouts     *cloner.Layouts `json:"layouts" validate:"required,dive,required"`
@@ -19,6 +21,14 @@ type Config struct {
 }
 
 func main() {
+	version := flag.Bool("version", false, "display version")
+	flag.Parse()
+
+	if *version {
+		fmt.Println(AppVersion)
+		return
+	}
+
 	layouts := cloner.NewLayouts(
 		&cloner.Layout{
 			Name:        "layout-grpc",

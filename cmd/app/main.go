@@ -4,14 +4,12 @@ import (
 	"cloner/internal/cloner"
 	"cloner/internal/git"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"io/ioutil"
-	"log"
 	"os"
 )
-
-const ConfigFileName = ".clonerconfig"
 
 type Config struct {
 	Git         *git.Config     `json:"git" validate:"required"`
@@ -34,17 +32,28 @@ func main() {
 			URL:         "https://qcm-git.mbrd.ru/service-platform/examples/layout-http",
 			Description: "Http MTSBF template",
 		},
+		&cloner.Layout{
+			Name:        "layout-pub-sub",
+			Namespace:   "examples",
+			URL:         "https://qcm-git.mbrd.ru/service-platform/examples/layout-pub-sub",
+			Description: "Pub-sub MTSBF template",
+		},
 	)
 
-	cfg := &Config{Layouts: layouts, ProjectsDir: "mygo", Namespaces: []string{"common-bank-services"}}
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
 	}
-	configFilePath := homeDir + "/" + ConfigFileName
-	err = cfg.ReadFromFile(configFilePath)
+
+	cfg := &Config{Layouts: layouts, ProjectsDir: homeDir + "/" + "mygo", Namespaces: []string{"common-bank-services"}}
+	configFilePath := homeDir + "/" + cloner.ConfigFileName
+	var configFile string
+	flag.StringVar(&configFile, "configfile", configFilePath, "Init config")
+	flag.Parse()
+
+	err = cfg.ReadFromFile(configFile)
 	if err != nil {
-		panic("Cannot read config file " + configFilePath + " " + err.Error())
+		panic("Cannot read config file " + configFile + " " + err.Error())
 	}
 
 	validate := validator.New()
@@ -65,9 +74,8 @@ func main() {
 
 func (c *Config) ReadFromFile(filePath string) error {
 	content, err := ioutil.ReadFile(filePath)
-
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	err = json.Unmarshal(content, c)
 	if err != nil {

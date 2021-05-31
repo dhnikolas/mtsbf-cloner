@@ -49,12 +49,30 @@ func (c *Cloner) AskProjectName () (string, error){
 func (c *Cloner) AskNamespace () (string, error) {
 	prompt := promptui.Select{
 		Label: "Select namespace",
-		Items: c.Namespaces,
+		Items: append(c.Namespaces, "other"),
 	}
 
 	_, namespace, err := prompt.Run()
 	if err != nil {
 		return "", err
+	}
+
+	if namespace == "other" {
+		var isLetter = regexp.MustCompile(`^[a-z-]{5,50}$`).MatchString
+		validate := func(input string) error {
+			if !isLetter(input) {
+				return errors.New("Namespace must have more than 5 characters and contains only lowercase letters and - ")
+			}
+			return nil
+		}
+		prompt := promptui.Prompt{
+			Label:    "Other Namespace",
+			Validate: validate,
+		}
+		namespace, err = prompt.Run()
+		if err != nil {
+			return "", err
+		}
 	}
 
 	return namespace, nil

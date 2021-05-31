@@ -3,7 +3,11 @@ package cloner
 import (
 	"cloner/internal/git"
 	"fmt"
-	"os"
+)
+
+const (
+	ConfigFileName = ".clonerconfig"
+	TmpDirectory = ".clonertmp"
 )
 
 type Cloner struct {
@@ -18,6 +22,10 @@ func New(layouts *Layouts, gitClient *git.Git, projectsDir string, namespaces []
 }
 
 func (c *Cloner) Start() error {
+	err := removeTmpDir()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	tmpDir, err := createTmpDir()
 	if err != nil {
@@ -36,27 +44,21 @@ func (c *Cloner) Start() error {
 	}
 
 	ch := make(chan error)
-
 	go func(ch chan error) {
 		err = c.GitClient.Clone(l.URL, tmpDir)
 		ch <- err
 	}(ch)
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
 	projectName, err := c.AskProjectName()
 	if err != nil {
 		return err
 	}
-	err =  <- ch
+	err = <-ch
 	if err != nil {
 		return err
 	}
 
-	projectDir, err := createDir(homeDir + "/" + c.ProjectsDir + "/" + projectName)
+	projectDir, err := createDir(c.ProjectsDir + "/" + projectName)
 	if err != nil {
 		return err
 	}

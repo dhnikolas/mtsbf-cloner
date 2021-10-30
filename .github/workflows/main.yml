@@ -65,6 +65,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          git config --global user.email "dhnikolas@gmail.com"
+          git config --global user.name "Nikolai"
 
           git clone https://dhnikolas:$GITHUB_TOKEN@github.com/dhnikolas/homebrew-tools # This works
           cd homebrew-tools

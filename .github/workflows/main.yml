@@ -78,8 +78,6 @@ jobs:
             url "https://github.com/dhnikolas/mtsbf-cloner/releases/download/${{ steps.vars.outputs.tag }}/cloner-${{ steps.vars.outputs.tag }}.tar.gz"
             sha256 "${{ steps.buildos.outputs.shasum }}"
 
-            bottle :unneeded
-
             def install
               out_file = File.new("#{Dir.home}/.clonerconfig", "w")
               out_file.puts("{}")

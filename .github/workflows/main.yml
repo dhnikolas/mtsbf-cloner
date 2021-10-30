@@ -24,4 +24,4 @@ jobs:
         with:
           go-version: '1.17.2' # The Go version to download (if necessary) and use.
       - name: Run build
-        run: GOOS=darwin GOARCH=amd64 go build . 
+        run: GOOS=darwin GOARCH=amd64 go build cmd/app/* 

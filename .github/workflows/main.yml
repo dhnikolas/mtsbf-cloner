@@ -19,3 +19,9 @@ jobs:
         run: |
           echo $RELEASE_VERSION
           echo ${{ steps.vars.outputs.tag }}
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.2' # The Go version to download (if necessary) and use.
+      - name: Run build
+        run: GOOS=darwin GOARCH=amd64 go build . 

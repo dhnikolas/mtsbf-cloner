@@ -23,10 +23,18 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17.2' # The Go version to download (if necessary) and use.
+          
       - name: Build for mac os 
-        run: GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./cloner cmd/app/* 
+        id: buildos
+        run: |
+          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./cloner cmd/app/* 
+          tar -czvf cloner.tar.gz cloner
+          SHASUM=$(sha256sum cloner.tar.gz)
+          echo ::set-output name=shasum::${SHASUM}
+          
       - name: Build for Linux
         run: GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./cloner-linux cmd/app/* 
+        
       - name: Get release
         id: get_release
         uses: agners/get-draft-release@v1.2.2
@@ -39,9 +47,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./cloner
-          asset_name: cloner-${{ steps.vars.outputs.tag }}
+          asset_path: ./cloner.tar.gz
+          asset_name: cloner-${{ steps.vars.outputs.tag }}.tar.gz
           asset_content_type: application/octet-stream
+          
       - name: Upload release binary Linux
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -51,3 +60,35 @@ jobs:
           asset_path: ./cloner-linux
           asset_name: cloner-${{ steps.vars.outputs.tag }}-linux
           asset_content_type: application/octet-stream
+
+      - name: Generate HomeBrew module
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+
+          git clone https://dhnikolas:$GITHUB_TOKEN@github.com/dhnikolas/homebrew-tools # This works
+          cd homebrew-tools
+          echo -e '
+          class Cloner < Formula
+            desc "Tool for quick clone layouts repo"
+            homepage "https://github.com/dhnikolas/mtsbf-cloner"
+            url "https://github.com/dhnikolas/mtsbf-cloner/releases/download/${{ steps.vars.outputs.tag }}/cloner-${{ steps.vars.outputs.tag }}.tar.gz"
+            sha256 "${{ steps.buildos.outputs.shasum }}"
+
+            bottle :unneeded
+
+            def install
+              out_file = File.new("#{Dir.home}/.clonerconfig", "w")
+              out_file.puts("{}")
+              bin.install "cloner"
+            end
+
+            test do
+              system "#{bin}/cloner", "--version"
+            end
+          end' > cloner.rb
+
+          git add .
+          git commit -m "Add new file"
+          
+          git push origin master

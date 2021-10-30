@@ -93,4 +93,4 @@ jobs:
           git add .
           git commit -m "Add new file"
           
-          git push origin master
+          git push origin main

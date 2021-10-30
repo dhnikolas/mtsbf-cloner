@@ -24,4 +24,19 @@ jobs:
         with:
           go-version: '1.17.2' # The Go version to download (if necessary) and use.
       - name: Run build
-        run: GOOS=darwin GOARCH=amd64 go build cmd/app/* 
+        run: GOOS=darwin GOARCH=amd64 go build  -o ./cloner cmd/app/* 
+      - name: Get release
+        id: get_release
+        uses: agners/get-draft-release@v0.1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./cloner
+          asset_name: cloner-${{ steps.vars.outputs.tag }}
+          asset_content_type: application/octet-stream

@@ -68,8 +68,8 @@ jobs:
           git config --global user.email "dhnikolas@gmail.com"
           git config --global user.name "Nikolai"
 
-          git clone https://dhnikolas:$GITHUB_TOKEN@github.com/dhnikolas/homebrew-tools # This works
-          git remote set-url origin https://dhnikolas:$GITHUB_TOKEN@github.com/dhnikolas/homebrew-tools.git
+          git clone https://dhnikolas:${{ secrets.SECRET_TOKEN }}@github.com/dhnikolas/homebrew-tools # This works
+          git remote set-url origin https://dhnikolas:${{ secrets.SECRET_TOKEN }}@github.com/dhnikolas/homebrew-tools.git
           cd homebrew-tools
           echo -e '
           class Cloner < Formula

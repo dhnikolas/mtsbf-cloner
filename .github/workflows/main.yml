@@ -101,6 +101,6 @@ jobs:
           end' > ${{ steps.vars.outputs.project_name }}.rb
 
           git add .
-          git commit -m "Add new file"
+          git commit -m "Deploy new ${{ steps.vars.outputs.project_name }} version ${{ steps.vars.outputs.tag }}"
           
           git push origin main

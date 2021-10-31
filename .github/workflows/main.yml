@@ -11,7 +11,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set output
         id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: |
+          PROJECT_NAME=cloner
+          PROJECT_DESCRIPTION="Tool for quick clone layouts repo"
+
+          echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+          echo ::set-output name=repo::${GITHUB_REPOSITORY}
+          echo ::set-output name=project_name::${PROJECT_NAME}
+          echo ::set-output name=project_name_upper::${PROJECT_NAME^}
+          echo ::set-output name=project_description::${PROJECT_DESCRIPTION}
       - name: Check output
         env:
           RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
@@ -26,13 +34,13 @@ jobs:
       - name: Build for mac os 
         id: buildos
         run: |
-          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./cloner cmd/app/* 
-          tar -czvf cloner.tar.gz cloner
-          SHASUM=$(sha256sum cloner.tar.gz | head -c 64)
+          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./app cmd/app/*
+          tar -czvf app.tar.gz app
+          SHASUM=$(sha256sum app.tar.gz | head -c 64)
           echo ::set-output name=shasum::${SHASUM}
           
       - name: Build for Linux
-        run: GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./cloner-linux cmd/app/* 
+        run: GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./app-linux cmd/app/*
         
       - name: Get release
         id: get_release
@@ -46,8 +54,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./cloner.tar.gz
-          asset_name: cloner-${{ steps.vars.outputs.tag }}.tar.gz
+          asset_path: ./app.tar.gz
+          asset_name: ${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}.tar.gz
           asset_content_type: application/octet-stream
           
       - name: Upload release binary Linux
@@ -56,8 +64,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./cloner-linux
-          asset_name: cloner-${{ steps.vars.outputs.tag }}-linux
+          asset_path: ./app-linux
+          asset_name: ${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}-linux
           asset_content_type: application/octet-stream
 
       - name: Generate HomeBrew module
@@ -71,22 +79,22 @@ jobs:
           git remote set-url origin https://dhnikolas:${{ secrets.SECRET_TOKEN }}@github.com/dhnikolas/homebrew-tools.git
           cd homebrew-tools
           echo -e '
-          class Cloner < Formula
+          class ${{ steps.vars.outputs.project_name_upper }} < Formula
             desc "Tool for quick clone layouts repo"
-            homepage "https://github.com/dhnikolas/mtsbf-cloner"
-            url "https://github.com/dhnikolas/mtsbf-cloner/releases/download/${{ steps.vars.outputs.tag }}/cloner-${{ steps.vars.outputs.tag }}.tar.gz"
+            homepage "https://github.com/${{ steps.vars.outputs.repo }}"
+            url "https://github.com/${{ steps.vars.outputs.repo }}/releases/download/${{ steps.vars.outputs.tag }}/${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}.tar.gz"
             sha256 "${{ steps.buildos.outputs.shasum }}"
 
             def install
-              out_file = File.new("#{Dir.home}/.clonerconfig", "w")
+              out_file = File.new("#{Dir.home}/.${{ steps.vars.outputs.project_name }}config", "w")
               out_file.puts("{}")
-              bin.install "cloner"
+              bin.install "${{ steps.vars.outputs.project_name }}"
             end
 
             test do
-              system "#{bin}/cloner", "--version"
+              system "#{bin}/${{ steps.vars.outputs.project_name }}", "--version"
             end
-          end' > cloner.rb
+          end' > ${{ steps.vars.outputs.project_name }}.rb
 
           git add .
           git commit -m "Add new file"

@@ -19,6 +19,7 @@ Put config in home directory ```~/.clonerconfig```<br>
 ```default projects_dir = ~/mygo``` <br>
 ```default namespace, layouts = the values correspond to those in the example below```
 
+
 ```json
 {
   "git": {

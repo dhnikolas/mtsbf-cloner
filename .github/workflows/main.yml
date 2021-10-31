@@ -34,15 +34,17 @@ jobs:
       - name: Build for mac os 
         id: buildos
         run: |
-          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./${{ steps.vars.outputs.project_name }} cmd/app/*
-          tar -czvf app-osx.tar.gz ${{ steps.vars.outputs.project_name }}
+          mkdir osx
+          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./osx/${{ steps.vars.outputs.project_name }} cmd/app/*
+          tar -czvf app-osx.tar.gz ./osx/${{ steps.vars.outputs.project_name }}
           SHASUM=$(sha256sum app-osx.tar.gz | head -c 64)
           echo ::set-output name=shasum::${SHASUM}
           
       - name: Build for Linux
         run: |
-          GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./${{ steps.vars.outputs.project_name }}-linux cmd/app/*
-          tar -czvf app-linux.tar.gz ${{ steps.vars.outputs.project_name }}
+          mkdir linux
+          GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./linux/${{ steps.vars.outputs.project_name }} cmd/app/*
+          tar -czvf app-linux.tar.gz ./linux/${{ steps.vars.outputs.project_name }}
         
       - name: Get release
         id: get_release

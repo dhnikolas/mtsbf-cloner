@@ -34,13 +34,15 @@ jobs:
       - name: Build for mac os 
         id: buildos
         run: |
-          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./app cmd/app/*
-          tar -czvf app.tar.gz app
+          GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./${{ steps.vars.outputs.project_name }} cmd/app/*
+          tar -czvf app-osx.tar.gz ${{ steps.vars.outputs.project_name }}
           SHASUM=$(sha256sum app.tar.gz | head -c 64)
           echo ::set-output name=shasum::${SHASUM}
           
       - name: Build for Linux
-        run: GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./app-linux cmd/app/*
+        run: |
+          GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build  -o ./${{ steps.vars.outputs.project_name }}-linux cmd/app/*
+          tar -czvf app-linux.tar.gz ${{ steps.vars.outputs.project_name }}
         
       - name: Get release
         id: get_release
@@ -48,14 +50,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Upload release binary
+      - name: Upload release binary OSX
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./app.tar.gz
-          asset_name: ${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}.tar.gz
+          asset_path: ./app-osx.tar.gz
+          asset_name: ${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}-osx.tar.gz
           asset_content_type: application/octet-stream
           
       - name: Upload release binary Linux
@@ -64,8 +66,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./app-linux
-          asset_name: ${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}-linux
+          asset_path: ./app-linux.tar.gz
+          asset_name: ${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}-linux.tar.gz
           asset_content_type: application/octet-stream
 
       - name: Generate HomeBrew module
@@ -82,7 +84,7 @@ jobs:
           class ${{ steps.vars.outputs.project_name_upper }} < Formula
             desc "Tool for quick clone layouts repo"
             homepage "https://github.com/${{ steps.vars.outputs.repo }}"
-            url "https://github.com/${{ steps.vars.outputs.repo }}/releases/download/${{ steps.vars.outputs.tag }}/${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}.tar.gz"
+            url "https://github.com/${{ steps.vars.outputs.repo }}/releases/download/${{ steps.vars.outputs.tag }}/${{ steps.vars.outputs.project_name }}-${{ steps.vars.outputs.tag }}-osx.tar.gz"
             sha256 "${{ steps.buildos.outputs.shasum }}"
 
             def install

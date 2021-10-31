@@ -1,9 +1,9 @@
-#Install on Mac OS with brew
+# Install on Mac OS with brew
 ```
  brew install dhnikolas/tools/cloner
 ```
 
-#Install on Linux
+# Install on Linux
 ```
 $ curl -s https://api.github.com/repos/dhnikolas/mtsbf-cloner/releases \
 | grep "browser_download_url.*linux.tar.gz" | head -n1 \
@@ -12,7 +12,7 @@ $ curl -s https://api.github.com/repos/dhnikolas/mtsbf-cloner/releases \
 $ sudo chmod +x  /usr/local/bin/cloner
 ```
 
-#Configuration
+# Configuration
 Put config in home directory ```~/.clonerconfig```<br>
 
 ```layouts, namespaces, projects_dir - optional parameters``` <br>

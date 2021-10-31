@@ -36,7 +36,7 @@ jobs:
         run: |
           GO111MODULE=on CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -o ./${{ steps.vars.outputs.project_name }} cmd/app/*
           tar -czvf app-osx.tar.gz ${{ steps.vars.outputs.project_name }}
-          SHASUM=$(sha256sum app.tar.gz | head -c 64)
+          SHASUM=$(sha256sum app-osx.tar.gz | head -c 64)
           echo ::set-output name=shasum::${SHASUM}
           
       - name: Build for Linux

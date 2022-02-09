@@ -41,19 +41,19 @@ func main() {
 		&cloner.Layout{
 			Name:        "layout-grpc",
 			Namespace:   "examples",
-			URL:         "https://qcm-git.mbrd.ru/service-platform/examples/layout-grpc",
+			URL:         "https://gitlab.mtsbank.ru/service-platform/examples/layout-grpc",
 			Description: "Grpc MTSBF template",
 		},
 		&cloner.Layout{
 			Name:        "layout-http",
 			Namespace:   "examples",
-			URL:         "https://qcm-git.mbrd.ru/service-platform/examples/layout-http",
+			URL:         "https://gitlab.mtsbank.ru/service-platform/examples/layout-http",
 			Description: "Http MTSBF template",
 		},
 		&cloner.Layout{
 			Name:        "layout-pub-sub",
 			Namespace:   "examples",
-			URL:         "https://qcm-git.mbrd.ru/service-platform/examples/layout-pub-sub",
+			URL:         "https://gitlab.mtsbank.ru/service-platform/examples/layout-pub-sub",
 			Description: "Pub-sub MTSBF template",
 		},
 	)

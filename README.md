@@ -13,7 +13,7 @@ $ sudo chmod +x  /usr/local/bin/cloner
 ```
 
 # Configuration
-Put config in home directory ```~/.clonerconfig```<br>
+Put config in home directory ```~/.clonerconfig.json```<br>
 
 ```layouts, namespaces, projects_dir - optional parameters``` <br>
 ```default projects_dir = ~/mygo``` <br>
@@ -22,12 +22,12 @@ Put config in home directory ```~/.clonerconfig```<br>
 ```json
 {
   "git": {
-    "user": "nnaumchenko",
+    "user": "username",
     "password": "somepassword"
   },
   "projects_dir": "/Users/dhnikolas/mygo",
   "namespaces": [
-    "common-bank-services"
+    "core"
   ]
 }
 ```

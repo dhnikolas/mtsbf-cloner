@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var AppVersion =""
+var AppVersion = ""
 
 type Config struct {
 	Git         *git.Config     `json:"git" validate:"required"`
@@ -41,20 +41,8 @@ func main() {
 		&cloner.Layout{
 			Name:        "layout-grpc",
 			Namespace:   "examples",
-			URL:         "https://gitlab.mtsbank.ru/service-platform/examples/layout-grpc",
-			Description: "Grpc MTSBF template",
-		},
-		&cloner.Layout{
-			Name:        "layout-http",
-			Namespace:   "examples",
-			URL:         "https://gitlab.mtsbank.ru/service-platform/examples/layout-http",
-			Description: "Http MTSBF template",
-		},
-		&cloner.Layout{
-			Name:        "layout-pub-sub",
-			Namespace:   "examples",
-			URL:         "https://gitlab.mtsbank.ru/service-platform/examples/layout-pub-sub",
-			Description: "Pub-sub MTSBF template",
+			URL:         "https://someaddr.ru/service-platform/examples/layout-grpc",
+			Description: "Grpc template",
 		},
 	)
 
@@ -64,7 +52,7 @@ func main() {
 	if err != nil {
 		panic(`Cannot read config file ` + configFile + " " + err.Error() + "\n\n" +
 			`Try to create a config file and set git credentials: ` + "\n" +
-			`echo '{"git": {"user":"", "password":""}}' > ~/.clonerconfig`)
+			`echo '{"git": {"user":"", "password":""}}' > ~/` + cloner.ConfigFileName)
 	}
 
 	validate := validator.New()

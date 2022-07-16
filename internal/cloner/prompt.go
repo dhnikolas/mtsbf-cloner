@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-func (c *Cloner) AskLayout () (*Layout, error) {
+func (c *Cloner) AskLayout() (*Layout, error) {
 	prompt := promptui.Select{
 		Label: "Select layout",
 		Items: c.Layouts.GetNames(),
@@ -24,12 +24,22 @@ func (c *Cloner) AskLayout () (*Layout, error) {
 	return layout, nil
 }
 
-func (c *Cloner) AskProjectName () (string, error){
-	var isLetter = regexp.MustCompile(`^[a-z-]{5,50}$`).MatchString
+func (c *Cloner) AskProjectName() (string, error) {
+	var isLetter = regexp.MustCompile(`^[a-z-]{3,50}$`).MatchString
 	validate := func(input string) error {
 		if !isLetter(input) {
-			return errors.New("Project name must have more than 5 characters and contains only lowercase letters and - ")
+			return errors.New("Project name must have more than 3 characters and contains only lowercase letters and - ")
 		}
+		fullPath := c.ProjectsDir + "/" + input
+		ok, err := exists(fullPath)
+		if err != nil {
+			return err
+		}
+
+		if ok {
+			return errors.New("Files already exists " + fullPath)
+		}
+
 		return nil
 	}
 	prompt := promptui.Prompt{
@@ -46,7 +56,7 @@ func (c *Cloner) AskProjectName () (string, error){
 	return result, nil
 }
 
-func (c *Cloner) AskNamespace () (string, error) {
+func (c *Cloner) AskNamespace() (string, error) {
 	prompt := promptui.Select{
 		Label: "Select namespace",
 		Items: append(c.Namespaces, "other"),
@@ -58,7 +68,7 @@ func (c *Cloner) AskNamespace () (string, error) {
 	}
 
 	if namespace == "other" {
-		var isLetter = regexp.MustCompile(`^[a-z-]{5,50}$`).MatchString
+		var isLetter = regexp.MustCompile(`^[a-z-]{1,50}$`).MatchString
 		validate := func(input string) error {
 			if !isLetter(input) {
 				return errors.New("Namespace must have more than 5 characters and contains only lowercase letters and - ")
@@ -78,7 +88,7 @@ func (c *Cloner) AskNamespace () (string, error) {
 	return namespace, nil
 }
 
-func (c *Cloner) AskOpenWith () (string, error) {
+func (c *Cloner) AskOpenWith() (string, error) {
 	prompt := promptui.Select{
 		Label: "Select application",
 		Items: []string{"goland", "vscode", "none"},

@@ -1,19 +1,19 @@
 package cloner
 
-type Layouts struct {
-	List []*Layout `json:"list" validate:"required,dive,required"`
-}
+type Layouts []*Layout
 
 func NewLayouts(layouts ...*Layout) *Layouts {
 	var list []*Layout
 	for _, l := range layouts {
 		list = append(list, l)
 	}
-	return &Layouts{List: list}
+	var l Layouts
+	l = list
+	return &l
 }
 
 func (l *Layouts) Get(name string) (*Layout, bool) {
-	for _, v := range l.List {
+	for _, v := range *l {
 		if name == v.Name {
 			return v, true
 		}
@@ -23,7 +23,7 @@ func (l *Layouts) Get(name string) (*Layout, bool) {
 
 func (l *Layouts) GetNames() []string {
 	var names []string
-	for _, v := range l.List {
+	for _, v := range *l {
 		names = append(names, v.Name)
 	}
 	return names

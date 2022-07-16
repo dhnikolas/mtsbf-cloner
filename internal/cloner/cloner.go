@@ -6,15 +6,15 @@ import (
 )
 
 const (
-	ConfigFileName = ".clonerconfig"
-	TmpDirectory = ".clonertmp"
+	ConfigFileName = ".clonerconfig.json"
+	TmpDirectory   = ".clonertmp"
 )
 
 type Cloner struct {
-	GitClient *git.Git
+	GitClient   *git.Git
 	Layouts     *Layouts
 	ProjectsDir string
-	Namespaces []string
+	Namespaces  []string
 }
 
 func New(layouts *Layouts, gitClient *git.Git, projectsDir string, namespaces []string) *Cloner {
@@ -101,6 +101,3 @@ func (c *Cloner) Start() error {
 
 	return nil
 }
-
-
-

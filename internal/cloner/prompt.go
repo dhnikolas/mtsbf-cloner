@@ -2,8 +2,9 @@ package cloner
 
 import (
 	"errors"
-	"github.com/manifoldco/promptui"
 	"regexp"
+
+	"github.com/manifoldco/promptui"
 )
 
 func (c *Cloner) AskLayout() (*Layout, error) {
@@ -91,7 +92,7 @@ func (c *Cloner) AskNamespace() (string, error) {
 func (c *Cloner) AskOpenWith() (string, error) {
 	prompt := promptui.Select{
 		Label: "Select application",
-		Items: []string{"goland", "vscode", "none"},
+		Items: []string{"goland", "none"},
 	}
 
 	_, app, err := prompt.Run()

@@ -1,10 +1,12 @@
 package cloner
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -80,9 +82,34 @@ func copyDir(source, destination string) error {
 }
 
 func openWith(app, path string) error {
-	cmd := exec.Command(app, path)
-	_, err := cmd.CombinedOutput()
-	return err
+	command, args := makeCommand(app, path)
+	cmd := exec.Command(command, args...)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("Error: %s, %s ", out, err.Error())
+	}
+
+	return nil
+}
+
+func makeCommand(app, path string) (string, []string) {
+	switch runtime.GOOS {
+	case "darwin":
+		return "open", []string{"-na", getDarwinAppName(app), "--args", path}
+	default:
+		return app, []string{path}
+	}
+}
+
+func getDarwinAppName(app string) string {
+	switch app {
+	case "goland":
+		return "GoLand.app"
+	case "vscode":
+		return "Visual Studio.app"
+	default:
+		return app
+	}
 }
 
 func replaceInDirectory(dir, old, new string) error {

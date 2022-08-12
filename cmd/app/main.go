@@ -1,14 +1,15 @@
 package main
 
 import (
-	"cloner/internal/cloner"
-	"cloner/internal/git"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"io/ioutil"
 	"os"
+
+	"cloner/internal/cloner"
+	"cloner/internal/git"
+	"github.com/go-playground/validator/v10"
 )
 
 var AppVersion = ""
